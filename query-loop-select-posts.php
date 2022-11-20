@@ -1,11 +1,12 @@
 <?php
 /**
- * Plugin Name:       Core Block Custom Attributes
- * Description:       Example to add custom attributes to core blocks (Toolbar and Sidebar)
+ * Plugin Name:       Query Loop Select Posts
+ * Description:       Permet de faire sélectionner des articles précis dans le bloc Boucle de requête
  * Requires at least: 5.8
  * Requires PHP:      7.0
  * Version:           0.1.0
- * Author:            Marie Comet
+ * Author:            Willy Bahuaud
+ * Author URI:        https://wabeo.fr
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       core-block-custom-attributes

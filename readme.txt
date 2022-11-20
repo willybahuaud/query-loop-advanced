@@ -1,12 +1,12 @@
-=== Core Block Custom Attributes ===
-Contributors:      The WordPress Contributors
+=== Query Loop Select Posts ===
+Contributors:      willybahuaud
 Tags:              block
 Tested up to:      5.8.0
 Stable tag:        0.1.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-Example block written with ESNext standard and JSX support – build step required.
+Permet de faire sélectionner des articles précis dans le bloc Boucle de requête
 
 == Description ==
 
