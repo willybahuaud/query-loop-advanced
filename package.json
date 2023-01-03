@@ -14,7 +14,10 @@
 		"packages-update": "wp-scripts packages-update"
 	},
 	"dependencies": {
-		"@wordpress/block-editor": "^8.0.9"
+		"@wordpress/block-editor": "^8.0.9",
+		"@wordpress/date": "^4.24.0",
+		"gutenberg-sortable": "^1.0.5",
+		"throttle-debounce": "^5.0.0"
 	},
 	"devDependencies": {
 		"@wordpress/blocks": "^11.21.0",

@@ -1,12 +1,19 @@
 const MY_VARIATION_NAME = 'wab/post__in';
 const { Fragment } = wp.element;
 const { InspectorControls } = wp.blockEditor;
-const { PanelBody } = wp.components;
-
-import React from 'react';
-import SelecteurMultiple from './orderableSelect';
-// import {PostInControl} from './postInControl';
+import { dateI18n } from '@wordpress/date'
+import Sortable from 'gutenberg-sortable'
+import {
+	PanelBody,
+    Button,
+} from '@wordpress/components'
 import { useSelect } from '@wordpress/data'
+import SearchPost from './searchPost'
+
+// import React from 'react';
+// import SelecteurMultiple from './orderableSelect';
+// import {PostInControl} from './postInControl';
+// import { useSelect } from '@wordpress/data'
 import { registerBlockVariation } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 
@@ -49,30 +56,48 @@ export const withBookQueryControls = ( BlockEdit ) => ( props ) => {
 	const { attributes, setAttributes } = props;
 	const { query } = attributes;
 
-	const posts = useSelect( select => {
-		return select( 'core' ).getEntityRecords( 'postType', query?.postType || 'post' )
-	}, [ query?.postType ] )
+    const values = query?.queriedPosts ? query.queriedPosts : []
+    const pt = useSelect(
+        (select) => {
+            if( ! query?.postType) {
+                return '/wp/v2/posts'
+            }
+            return select('core').getEntityConfig('postType',query.postType).baseURL
+        },
+        ['query']
+    )//query?.postType ? query?.postType : 'posts'
+    const posts = useSelect(
+        (select) => {
 
-	let options = []
-	if ( posts?.length ) {
-		options = posts.map(obj => {
-			return {
-				value: obj.id,
-				label: obj.title.rendered,
-			};
-		})
-	}
+            const posts = values ? select('core').getEntityRecords('postType','post',{include:values}) : null
+            if ( posts ) {
+                return values.map((el) =>{
+                    const result = posts.filter(obj => {
+                        return obj.id === el
+                    })
+                    return(result[0])
+                })
+            }
+        },
+        [values]
+    )
 
-    const values = (query?.queriedPosts) ? (query.queriedPosts.map(obj => {
-        return options.find(item => item.value === obj );
-    })
-) : []
+    const removeQueriedPost = ( toDel ) => {
+        const nqp = [ ...values].filter(el => el !== toDel)
+        const nq = Object.assign({}, query, {queriedPosts: nqp ?? [] })
+        setAttributes({ query: nq })
+    }
 
+    const addQueriedPost = ( newValue ) => {
+        const nqp = [ ...values,newValue]
+        const nq = Object.assign({}, query, {queriedPosts: nqp ?? [] })
+        setAttributes({ query: nq })
+    }
 
-const updateQuery = (values) => {
-    const nq = Object.assign({}, query, {queriedPosts: values ? values.map(a => a.value) : [] })
-    setAttributes({ query: nq })
-}
+    const updateQuery = (values) => {
+        const nq = Object.assign({}, query, {queriedPosts: values.map(el => el.id) ?? [] })
+        setAttributes({ query: nq })
+    }
 
 
     return isMyBooksVariation( props ) ? (
@@ -82,17 +107,37 @@ const updateQuery = (values) => {
                 <PanelBody
     	                title={ __( 'Sélectionnez un article' ) }
     	            >
-                        {/* <PostInControl
-                            query={ query }
-                            onChange={ updateQuery }
-                        /> */}
-						<div className='Select'>
-							<SelecteurMultiple
-								selected={values}
-								onChange={updateQuery}
-								options={options}
-							/>
-						</div>
+                        <SearchPost
+						excludeId={values}
+						postTypeBase={pt}
+						onAdd={addQueriedPost}
+						/>
+						{ posts?.length > 0 && (
+							<Sortable
+								className ="gallery"
+								items     ={posts}
+								onSortEnd ={updateQuery}
+							>
+							{posts.map(( child, index ) =>{
+
+								return(
+									<div
+										className="detail-agenda__alsolike"
+										key={'elem'+child.id}
+									>
+										<span className="detail-agenda__alsolike__item">
+										{`${child.title.rendered} (${dateI18n( 'd/m/Y', child.date)})`}
+										</span>
+										<Button
+											onClick={() => removeQueriedPost(child.id) }
+											style={{float:'right'}}>
+											╳
+										</Button>
+									</div>
+									)
+							})}
+						</Sortable>)
+						}
 	                </PanelBody>
             </InspectorControls>
         </Fragment>

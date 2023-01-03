@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Query Loop Select Posts
+ * Plugin Name:       Query Loop Select Posts 2
  * Description:       Permet de faire sélectionner des articles précis dans le bloc Boucle de requête
  * Requires at least: 5.8
  * Requires PHP:      7.0
@@ -38,6 +38,7 @@ add_filter( 'query_loop_block_query_vars', 'custom_loop_query', 10, 2 );
 function custom_loop_query( $query, $block ) {
     if ( ! empty( $block->context['query']['queriedPosts'] ) ) {
         $query['post__in'] = $block->context['query']['queriedPosts'];
+        $query['orderby'] = 'post__in';
     }
     return $query;
 }
@@ -47,6 +48,7 @@ add_filter( 'rest_page_query', 'filter_query_loop_edit', 10, 2 );
 function filter_query_loop_edit( $args, $request ) {
     if ( ! empty( $request->get_param( 'queriedPosts' ) ) ) {
         $args['post__in'] = $request->get_param( 'queriedPosts' );
+        $args['orderby'] = 'post__in';
     }
     return $args;
 }
